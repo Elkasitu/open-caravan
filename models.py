@@ -155,13 +155,17 @@ class Caravan(object):
             self.reverse_order()
         else:
             # Joker
-            if other_card.value == 'A':
+            if other_card.display_value == 'A':
                 # Remove all cards of the Ace's suit
                 for caravan in Caravan.caravans:
-                    caravan.stack = filter(lambda x: x.suit == card.suit,
+                    caravan.stack = filter(lambda x:
+                                           (x.suit == other_card.suit and
+                                            x != other_card),
                                            caravan.stack)
             else:
                 # Remove all cards of the card's value
                 for caravan in Caravan.caravans:
-                    caravan.stack = filter(lambda x: x.value == card.value,
+                    caravan.stack = filter(lambda x:
+                                           (x.display_value == other_card.display_value and
+                                            x != other_card),
                                            caravan.stack)

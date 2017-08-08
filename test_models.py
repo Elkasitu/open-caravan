@@ -151,6 +151,105 @@ class TestCaravan(unittest.TestCase):
 
         self.assertEqual(self.caravan.get_value(), 15)
 
+    def test_can_sell(self):
+        card1 = self.deck.stack[9]
+        card2 = self.deck.stack[8]
+        card3 = self.deck.stack[6]
+
+        self.caravan.add_card(card1)
+        self.caravan.add_card(card2)
+        self.caravan.add_card(card3)
+
+        self.assertTrue(self.caravan.can_sell())
+
+    def test_can_not_sell(self):
+        card1 = self.deck.stack[9]
+        card2 = self.deck.stack[8]
+        card3 = self.deck.stack[7]
+
+        self.caravan.add_card(card1)
+        self.caravan.add_card(card2)
+
+        self.assertFalse(self.caravan.can_sell())
+
+        self.caravan.add_card(card3)
+
+        self.assertFalse(self.caravan.can_sell())
+
+    def test_apply_card_king(self):
+        card1 = self.deck.stack[9]
+        card2 = self.deck.stack[-4]
+
+        self.caravan.add_card(card1)
+        self.caravan.apply_card(card2, self.caravan.stack[0])
+
+        self.assertEqual(self.caravan.stack[0].value, 20)
+
+    def test_apply_card_queen(self):
+        card1 = self.deck.stack[0]
+        card2 = self.deck.stack[9]
+        card3 = self.deck.stack[-3]
+        card4 = self.deck.stack[8]
+
+        self.caravan.add_card(card1)
+        self.caravan.add_card(card2)
+        self.caravan.apply_card(card3, self.caravan.stack[1])
+        self.caravan.add_card(card4)
+
+        self.assertEqual(self.caravan.stack[-1], card4)
+
+    def test_apply_card_jack(self):
+        card1 = self.deck.stack[0]
+        card2 = self.deck.stack[-5]
+
+        self.caravan.add_card(card1)
+        self.caravan.apply_card(card2, self.caravan.stack[0])
+
+        self.assertEqual(len(self.caravan.stack), 0)
+
+    def test_apply_card_joker_ace(self):
+        card1 = self.deck.stack[0]
+        card2 = self.deck.stack[1]
+        card3 = self.deck.stack[2]
+        card4 = self.deck.stack[22]
+        card5 = self.deck.draw()
+
+        other_caravan = models.Caravan()
+
+        self.caravan.add_card(card1)
+        self.caravan.add_card(card2)
+
+        other_caravan.add_card(card3)
+        other_caravan.add_card(card4)
+
+        self.caravan.apply_card(card5, self.caravan.stack[0])
+
+        self.assertEqual(len(self.caravan.stack), 1)
+        self.assertEqual(len(other_caravan.stack), 1)
+
+    def test_apply_card_joker_number(self):
+        # FIXME
+        card1 = self.deck.stack[1]
+        card2 = self.deck.stack[14]
+        card3 = self.deck.stack[27]
+        card4 = self.deck.stack[42]
+        print(str(card1), str(card2), str(card3), str(card4))
+        card5 = self.deck.draw()
+
+        other_caravan = models.Caravan()
+        caravan3 = models.Caravan()
+
+        self.caravan.add_card(card1)
+        caravan3.add_card(card2)
+        other_caravan.add_card(card3)
+        other_caravan.add_card(card4)
+
+        self.caravan.apply_card(card5, self.caravan.stack[0])
+
+        self.assertEqual(len(self.caravan.stack), 1)
+        self.assertEqual(len(other_caravan.stack), 1)
+        self.assertEquals(len(caravan3.stack), 0)
+
     def tearDown(self):
         models.Caravan.caravans = []
 
