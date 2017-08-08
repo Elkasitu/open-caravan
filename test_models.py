@@ -11,7 +11,7 @@ class TestCard(unittest.TestCase):
         card = models.Card('Spades', 'A')
 
         self.assertEqual(card.suit, 'Spades')
-        self.assertEqual(card.value, 'A')
+        self.assertEqual(card.display_value, 'A')
 
     def test_card_val_change(self):
         card = models.Card('Hearts', 10)
@@ -83,6 +83,73 @@ class TestCaravan(unittest.TestCase):
 
         self.assertFalse(self.caravan.can_add(card))
         self.assertTrue(self.caravan.can_add(card2))
+
+    def test_add(self):
+        card = self.deck.stack[0]
+        self.caravan.add_card(card)
+
+        self.assertEqual(len(self.caravan.stack), 1)
+
+    def test_order_asc(self):
+        card1 = self.deck.stack[0]
+        card2 = self.deck.stack[1]
+
+        self.caravan.add_card(card1)
+        self.caravan.add_card(card2)
+
+        self.assertTrue(self.caravan.order, 'ASC')
+
+    def test_order_desc(self):
+        card1 = self.deck.stack[0]
+        card2 = self.deck.stack[1]
+
+        self.caravan.add_card(card2)
+        self.caravan.add_card(card1)
+
+        self.assertTrue(self.caravan.order, 'DESC')
+
+    def test_reverse_order(self):
+        card1 = self.deck.stack[0]
+        card2 = self.deck.stack[1]
+
+        self.caravan.add_card(card1)
+        self.caravan.add_card(card2)
+        self.caravan.reverse_order()
+
+        self.assertTrue(self.caravan.order, 'DESC')
+
+    def test_add_and_can_add(self):
+        card1 = self.deck.stack[0]
+        card2 = self.deck.stack[1]
+        card3 = self.deck.stack[2]
+        card4 = self.deck.stack[3]
+
+        self.caravan.add_card(card1)
+        self.caravan.add_card(card3)
+
+        self.assertFalse(self.caravan.can_add(card2))
+        self.assertFalse(self.caravan.can_add(card3))
+        self.assertTrue(self.caravan.can_add(card4))
+
+    def test_bad_add_card(self):
+        card = self.deck.stack[0]
+
+        self.caravan.add_card(card)
+
+        with self.assertRaises(ValueError) as context:
+            self.caravan.add_card(card)
+
+        self.assertEqual(str(context.exception),
+                         "Two cards of same value can't be piled!")
+
+    def test_get_value(self):
+        card1 = self.deck.stack[4]
+        card2 = self.deck.stack[9]
+
+        self.caravan.add_card(card1)
+        self.caravan.add_card(card2)
+
+        self.assertEqual(self.caravan.get_value(), 15)
 
     def tearDown(self):
         models.Caravan.caravans = []

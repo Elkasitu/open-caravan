@@ -13,7 +13,12 @@ class Card(object):
     def __init__(self, suit, value):
         self.suit = suit
         self.display_value = value
-        self.value = value
+
+        if value == 'A':
+            self.value = 1
+        else:
+            self.value = value
+
         self.modifiers = []
 
     def add_mod(self, card):
@@ -99,6 +104,15 @@ class Caravan(object):
     def add_card(self, card):
         self.stack.append(card)
 
+        if len(self.stack) == 2:
+            d = self.stack[0].value - card.value
+            if d > 0:
+                self.order = 'DESC'
+            elif d < 0:
+                self.order = 'ASC'
+            else:
+                raise ValueError("Two cards of same value can't be piled!")
+
     def can_add(self, card):
 
         if card.value in SPECIAL:
@@ -114,19 +128,7 @@ class Caravan(object):
             else:
                 ret_val = False
         else:
-            # The stack's not empty
-            if len(self.stack) > 0:
-                d = self.stack[0].value - card.value
-                if d == 0:
-                    ret_val = False
-                elif d > 0:
-                    self.order = 'DESC'
-                    ret_val = True
-                else:
-                    self.order = 'ASC'
-                    ret_val = True
-            else:
-                ret_val = True
+            ret_val = True
 
         return ret_val
 
