@@ -228,12 +228,10 @@ class TestCaravan(unittest.TestCase):
         self.assertEqual(len(other_caravan.stack), 1)
 
     def test_apply_card_joker_number(self):
-        # FIXME
         card1 = self.deck.stack[1]
         card2 = self.deck.stack[14]
         card3 = self.deck.stack[27]
         card4 = self.deck.stack[42]
-        print(str(card1), str(card2), str(card3), str(card4))
         card5 = self.deck.draw()
 
         other_caravan = models.Caravan()
