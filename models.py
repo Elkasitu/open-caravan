@@ -92,6 +92,46 @@ class Deck(object):
         return not self.__eq__(other)
 
 
+class Player(object):
+
+    def __init__(self, name, deck):
+        self.hand = []
+        self.deck = deck
+        self.name = name
+        self.caravans = []
+
+        for _ in range(8):
+            self.hand.append(self.deck.draw())
+
+        for _ in range(3):
+            self.caravans.append(Caravan())
+
+    def play_card(self, i, j):
+        if i >= len(self.hand) or j >= len(self.caravans):
+            raise IndexError("Index out of range")
+        else:
+            card = self.hand[i]
+            caravan = self.caravans[j]
+
+            if caravan.can_add(card):
+                caravan.add_card(card)
+                return True
+
+        return False
+
+    def discard_card(self, i):
+        if i >= len(self.hand):
+            raise IndexError("Index out of range")
+        else:
+            del self.hand[i]
+
+    def discard_caravan(self, i):
+        if i >= len(self.caravans):
+            raise IndexError("Index out of range")
+        else:
+            self.caravans[i].reset()
+
+
 class Caravan(object):
 
     caravans = []
@@ -169,3 +209,7 @@ class Caravan(object):
                                            (x.display_value != other_card.display_value or
                                             x == other_card),
                                            caravan.stack)
+
+    def reset(self):
+        self.stack = []
+        self.order = None

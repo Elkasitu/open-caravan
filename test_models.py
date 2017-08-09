@@ -252,5 +252,53 @@ class TestCaravan(unittest.TestCase):
         models.Caravan.caravans = []
 
 
+class TestPlayer(unittest.TestCase):
+
+    def setUp(self):
+        self.deck = models.Deck()
+        self.deck.shuffle()
+        self.player = models.Player('Tester', self.deck)
+
+    def test_init(self):
+        self.assertEqual(len(self.player.hand), 8)
+        self.assertEqual(len(self.player.caravans), 3)
+        self.assertEqual([True if caravan.stack == [] else False for caravan in
+                          self.player.caravans], [True, True, True])
+
+    def test_play_card(self):
+        for i, card in enumerate(self.player.hand):
+            if card.value in range(1, 11):
+                self.player.play_card(i, 0)
+                break
+
+        self.assertEqual(len(self.player.caravans[0].stack), 1)
+
+    def test_bad_play_card(self):
+
+        with self.assertRaises(IndexError) as context:
+            self.player.play_card(8, self.player.caravans[0])
+
+        self.assertEqual(str(context.exception), "Index out of range")
+
+    def test_discard_card(self):
+        self.assertEqual(len(self.player.hand), 8)
+
+        self.player.discard_card(0)
+
+        self.assertEqual(len(self.player.hand), 7)
+
+    def test_discard_caravan(self):
+        for i, card in enumerate(self.player.hand):
+            if card.value in range(1, 11):
+                self.player.play_card(i, 0)
+                break
+
+        self.assertEqual(len(self.player.caravans[0].stack), 1)
+
+        self.player.discard_caravan(0)
+
+        self.assertEqual(len(self.player.caravans[0].stack), 0)
+
+
 if __name__ == '__main__':
     unittest.main()
